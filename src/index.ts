@@ -7,6 +7,7 @@ type Config = {
     from?: number;
     to: number;
   };
+  noMemo?: boolean;
 };
 
 type Payload = {
@@ -75,8 +76,10 @@ export function slidingWindow<T extends any>(
         },
       };
 
-      memo[j] = memo[j] || [];
-      memo[j][y] = handler(payload, memo);
+      if (config.noMemo !== false) {
+        memo[j] = memo[j] || [];
+        memo[j][y] = handler(payload, memo);
+      }
     }
   }
 
