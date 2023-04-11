@@ -195,4 +195,75 @@ describe('Invocation', () => {
       expect(memo[pair[0]][pair[1]]).to.equal(pair.join('-'));
     });
   });
+
+  /**
+   * 0-1
+   */
+  it('should execute single sliding window case as expected.', () => {
+    const config = { size: { min: 1, max: 1 }, index: { from: 0, to: 1 } };
+    const EXPECTED = [
+      {
+        pair: [0, 1],
+        iteration: 0,
+        currentSize: 1,
+        step: 1,
+        direction: 1,
+      },
+    ];
+
+    let i = 0;
+    const memo = slidingWindow((payload, memo) => {
+      const expected = EXPECTED[i++];
+      expect(payload).to.deep.equal({ ...expected, config });
+
+      return payload.pair.join('-');
+    }, config);
+    expect(i).to.equal(EXPECTED.length);
+
+    EXPECTED.forEach(({ pair }, i) => {
+      expect(memo[pair[0]][pair[1]]).to.equal(pair.join('-'));
+    });
+  });
+
+  /**
+   * No sliding window as from and to are equal
+   */
+  it('should throw an error for empty range case.', () => {
+    const config = { size: { min: 1, max: 1 }, index: { from: 0, to: 0 } };
+
+    expect(() => {
+      slidingWindow((payload, memo) => {
+        // This handler should never be called since there's no valid range for the sliding window
+      }, config);
+    }).to.throw(Error, "Maximum size cannot be greater than range.");
+  });
+
+  /**
+   * 0-4
+   */
+  it('should execute single full-range sliding window case as expected.', () => {
+    const config = { size: { min: 4, max: 4 }, index: { from: 0, to: 4 } };
+    const EXPECTED = [
+      {
+        pair: [0, 4],
+        iteration: 0,
+        currentSize: 4,
+        step: 4,
+        direction: 1,
+      },
+    ];
+
+    let i = 0;
+    const memo = slidingWindow((payload, memo) => {
+      const expected = EXPECTED[i++];
+      expect(payload).to.deep.equal({ ...expected, config });
+
+      return payload.pair.join('-');
+    }, config);
+    expect(i).to.equal(EXPECTED.length);
+
+    EXPECTED.forEach(({ pair }, i) => {
+      expect(memo[pair[0]][pair[1]]).to.equal(pair.join('-'));
+    });
+  });
 });
